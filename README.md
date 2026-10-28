@@ -2,7 +2,7 @@
 
 Calculadora interativa criada com o Google AI Studio (Gemini) durante a Imersão Dev da Alura + Google.
 
-![Calculadora](calculadora.png.png)
+![Calculadora](calculadora.png)
 
 ## O que ela faz
 
