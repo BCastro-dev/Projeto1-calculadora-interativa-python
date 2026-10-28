@@ -1,0 +1,6 @@
+{
+  "name": "PyCalc Studio - Calculadora em Python",
+  "description": "Calculadora interativa completa em Python com execução em tempo real, editor de código, gerador customizado e modelos prontos para terminal e interface gráfica.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
