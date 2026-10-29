@@ -163,6 +163,28 @@ Paradigma: ${paradigm.toUpperCase()}
       code += `        return self.valor_atual\n\n`;
     }
 
+    if (operations.percentage) {
+      code += `    def porcentagem(self, percentual${features.typeHints ? ': float' : ''})${features.typeHints ? ' -> float' : ''}:\n`;
+      if (features.docstrings) code += `        """Calcula o valor correspondente a percentual% sobre o valor acumulado."""\n`;
+      code += `        resultado = self.valor_atual * (percentual / 100)\n`;
+      if (features.keepHistory) code += `        self.historico.append(f"{percentual}% de {self.valor_atual} = {resultado}")\n`;
+      code += `        return resultado\n\n`;
+
+      code += `    def aplicar_acrescimo(self, percentual${features.typeHints ? ': float' : ''})${features.typeHints ? ' -> float' : ''}:\n`;
+      if (features.docstrings) code += `        """Aplica acréscimo percentual ao valor acumulado."""\n`;
+      code += `        acrescimo = self.valor_atual * (percentual / 100)\n`;
+      if (features.keepHistory) code += `        self.historico.append(f"{self.valor_atual} + {percentual}% = {self.valor_atual + acrescimo}")\n`;
+      code += `        self.valor_atual += acrescimo\n`;
+      code += `        return self.valor_atual\n\n`;
+
+      code += `    def aplicar_desconto(self, percentual${features.typeHints ? ': float' : ''})${features.typeHints ? ' -> float' : ''}:\n`;
+      if (features.docstrings) code += `        """Aplica desconto percentual ao valor acumulado."""\n`;
+      code += `        desconto = self.valor_atual * (percentual / 100)\n`;
+      if (features.keepHistory) code += `        self.historico.append(f"{self.valor_atual} - {percentual}% = {self.valor_atual - desconto}")\n`;
+      code += `        self.valor_atual -= desconto\n`;
+      code += `        return self.valor_atual\n\n`;
+    }
+
     if (features.keepHistory) {
       code += `    def ver_historico(self)${features.typeHints ? ' -> None' : ''}:\n`;
       code += `        print("\\n=== Histórico de Cálculos ===")\n`;
@@ -221,12 +243,29 @@ Paradigma: ${paradigm.toUpperCase()}
       code += `    return math.sqrt(n)\n\n`;
     }
 
+    if (operations.percentage) {
+      code += `def calcular_porcentagem(valor${features.typeHints ? ': float' : ''}, percentual${features.typeHints ? ': float' : ''})${features.typeHints ? ' -> float' : ''}:\n`;
+      if (features.docstrings) code += `    """Retorna o valor percentual de uma quantia (ex: 15% de 200 = 30)."""\n`;
+      code += `    return valor * (percentual / 100)\n\n`;
+
+      code += `def aplicar_acrescimo(valor${features.typeHints ? ': float' : ''}, percentual${features.typeHints ? ': float' : ''})${features.typeHints ? ' -> float' : ''}:\n`;
+      if (features.docstrings) code += `    """Retorna o valor original acrescido da porcentagem."""\n`;
+      code += `    return valor * (1 + percentual / 100)\n\n`;
+
+      code += `def aplicar_desconto(valor${features.typeHints ? ': float' : ''}, percentual${features.typeHints ? ': float' : ''})${features.typeHints ? ' -> float' : ''}:\n`;
+      if (features.docstrings) code += `    """Retorna o valor original deduzido da porcentagem."""\n`;
+      code += `    return valor * (1 - percentual / 100)\n\n`;
+    }
+
     code += `if __name__ == "__main__":\n`;
     code += `    print("Demonstração das Funções:")\n`;
     code += `    print("10 + 5 =", somar(10, 5))\n`;
     code += `    print("20 - 8 =", subtrair(20, 8))\n`;
     code += `    print("6 * 7  =", multiplicar(6, 7))\n`;
     code += `    print("15 / 3 =", dividir(15, 3))\n`;
+    if (operations.percentage) {
+      code += `    print("15% de 200 =", calcular_porcentagem(200, 15))\n`;
+    }
     return code;
   }
 
@@ -240,16 +279,29 @@ Paradigma: ${paradigm.toUpperCase()}
   code += `    print("3. Multiplicação (*)")\n`;
   code += `    print("4. Divisão (/)")\n`;
   let opIdx = 5;
+  let powerIdx = -1;
+  let sqrtIdx = -1;
+  let moduloIdx = -1;
+  let percentageIdx = -1;
+
   if (operations.power) {
     code += `    print("${opIdx}. Potenciação (**)")\n`;
+    powerIdx = opIdx;
     opIdx++;
   }
   if (operations.sqrt) {
     code += `    print("${opIdx}. Raiz Quadrada (√)")\n`;
+    sqrtIdx = opIdx;
     opIdx++;
   }
   if (operations.modulo) {
     code += `    print("${opIdx}. Resto da Divisão (%)")\n`;
+    moduloIdx = opIdx;
+    opIdx++;
+  }
+  if (operations.percentage) {
+    code += `    print("${opIdx}. Porcentagem (%)")\n`;
+    percentageIdx = opIdx;
     opIdx++;
   }
   code += `    print("0. Sair")\n`;
@@ -294,10 +346,34 @@ Paradigma: ${paradigm.toUpperCase()}
   code += `                res = n1 / n2\n`;
   code += `                print(f"Resultado: {n1} / {n2} = {res}")\n`;
 
-  if (operations.power) {
-    code += `        elif opcao == "5":\n`;
+  if (operations.power && powerIdx !== -1) {
+    code += `        elif opcao == "${powerIdx}":\n`;
     code += `            res = n1 ** n2\n`;
     code += `            print(f"Resultado: {n1} ** {n2} = {res}")\n`;
+  }
+
+  if (operations.sqrt && sqrtIdx !== -1) {
+    code += `        elif opcao == "${sqrtIdx}":\n`;
+    code += `            if n1 < 0:\n`;
+    code += `                print("Erro: Raiz de número negativo!")\n`;
+    code += `            else:\n`;
+    code += `                res = math.sqrt(n1)\n`;
+    code += `                print(f"Resultado: √{n1} = {res}")\n`;
+  }
+
+  if (operations.modulo && moduloIdx !== -1) {
+    code += `        elif opcao == "${moduloIdx}":\n`;
+    code += `            if n2 == 0:\n`;
+    code += `                print("Erro: Divisão por zero no módulo!")\n`;
+    code += `            else:\n`;
+    code += `                res = n1 % n2\n`;
+    code += `                print(f"Resultado: {n1} % {n2} = {res}")\n`;
+  }
+
+  if (operations.percentage && percentageIdx !== -1) {
+    code += `        elif opcao == "${percentageIdx}":\n`;
+    code += `            res = n1 * (n2 / 100)\n`;
+    code += `            print(f"Resultado: {n2}% de {n1} = {res}")\n`;
   }
 
   code += `\nif __name__ == "__main__":\n`;

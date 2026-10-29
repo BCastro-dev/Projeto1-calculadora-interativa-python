@@ -82,6 +82,19 @@ export const PythonGuideView: React.FC = () => {
             <span className="text-emerald-400 font-bold">a ** b (ex: 2 ** 8 = 256)</span>
           </div>
         </div>
+
+        {/* Tip: Percentages in Python */}
+        <div className="p-3.5 rounded-lg bg-blue-950/30 border border-blue-800/40 text-xs text-blue-200/90 space-y-1">
+          <div className="font-semibold text-blue-300 flex items-center gap-1.5">
+            <Lightbulb className="w-4 h-4 text-amber-400" />
+            <span>Atenção: Porcentagem em Python vs Operador %</span>
+          </div>
+          <p className="leading-relaxed">
+            Em Python, o símbolo <code className="text-emerald-400 font-mono">%</code> calcula o <strong>resto da divisão (módulo)</strong> e não a porcentagem.
+            Para calcular porcentagens em Python, divide-se por 100: por exemplo, 15% de 200 é escrito como{' '}
+            <code className="text-amber-300 font-mono">200 * (15 / 100)</code> ou <code className="text-amber-300 font-mono">200 * 0.15</code>.
+          </p>
+        </div>
       </section>
 
       {/* Step 2: Entrada com input e float */}

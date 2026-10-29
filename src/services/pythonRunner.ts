@@ -117,6 +117,36 @@ export function getAnsValue(): number {
 }
 
 /**
+ * Transforms percentage expressions into executable math while preserving binary modulo.
+ * e.g. "200 + 10%" -> "(200 + (200 * (10 / 100)))"
+ *      "200 - 15%" -> "(200 - (200 * (15 / 100)))"
+ *      "200 * 15%" -> "200 * (15 / 100)"
+ *      "50%"       -> "(50 / 100)"
+ *      "(20 + 30)%" -> "(20 + 30) / 100"
+ * while "10 % 3" remains "10 % 3" (modulo)
+ */
+export function transformPercentageExpression(expr: string): string {
+  let res = expr;
+  // 1. A + B% or A - B% -> e.g. 200 + 10% -> (200 + (200 * (10 / 100)))
+  res = res.replace(
+    /(\b\d+(?:\.\d+)?)\s*([+-])\s*(\d+(?:\.\d+)?)\s*%(?!\s*[\d\w(])/g,
+    '($1 $2 ($1 * ($3 / 100)))'
+  );
+  // 2. Numbers followed by % e.g. 15% -> (15 / 100)
+  res = res.replace(/(\b\d+(?:\.\d+)?)\s*%(?!\s*[\d\w(])/g, '($1 / 100)');
+  // 3. Parentheses followed by % e.g. (20 + 30)% -> (20 + 30) / 100
+  res = res.replace(/\)\s*%(?!\s*[\d\w(])/g, ') / 100');
+  return res;
+}
+
+/**
+ * Checks whether an expression contains a percentage calculation syntax
+ */
+export function isPercentageExpression(expr: string): boolean {
+  return /(\b\d+(?:\.\d+)?|\))\s*%(?!\s*[\d\w(])/.test(expr);
+}
+
+/**
  * Evaluates a single Python math expression string (e.g. "12 + math.sqrt(64) * 2**3")
  */
 export function evaluatePythonExpression(
@@ -161,11 +191,14 @@ export function evaluatePythonExpression(
       bin: (x: number) => '0b' + (Number(x) >>> 0).toString(2),
       hex: (x: number) => '0x' + (Number(x) >>> 0).toString(16),
       oct: (x: number) => '0o' + (Number(x) >>> 0).toString(8),
+      porcentagem: (valor: number, perc: number) => (valor * perc) / 100,
+      percent: (val: number) => val / 100,
     };
 
+    // Transform percentage syntax (e.g. 200 * 15% -> 200 * (15 / 100))
     // Replace Python integer division '//' with Math.floor(a / b)
     // and '^' if user entered it into power '**'
-    let trans = trimmed
+    let trans = transformPercentageExpression(trimmed)
       .replace(/\^/g, '**')
       .replace(/(\w+|\d+(?:\.\d+)?|\))\s*\/\/\s*(\w+|\d+(?:\.\d+)?|\()/g, 'Math.floor($1 / $2)');
 
@@ -256,6 +289,8 @@ export async function executePythonScript(code: string): Promise<ExecutionResult
       float: (x: any) => parseFloat(x),
       str: (x: any) => String(x),
       bool: (x: any) => Boolean(x),
+      porcentagem: (valor: number, perc: number) => (valor * perc) / 100,
+      percent: (val: number) => val / 100,
       range: (start: number, stop?: number, step = 1) => {
         if (stop === undefined) {
           stop = start;
@@ -516,6 +551,18 @@ export function generatePythonEquivalent(
   let code = '';
   if (needsMathImport) {
     code += `import math\n\n`;
+  }
+
+  // Se a expressão usa sintaxe de porcentagem, ensina como calcular em Python
+  if (isPercentageExpression(expr)) {
+    const pythonExpr = transformPercentageExpression(expr);
+    code += `# Em Python, o operador '%' é o resto da divisão (módulo).\n`;
+    code += `# Para calcular porcentagem, dividimos por 100: ex: 15% => (15 / 100)\n`;
+    code += `expressao_original = "${expr}"\n`;
+    code += `resultado = ${pythonExpr}\n\n`;
+    code += `print(f"Cálculo: {expressao_original}")\n`;
+    code += `print(f"Resultado em Python: {resultado}")  # => ${result}\n`;
+    return code;
   }
 
   code += `# Expressão calculada:\n`;

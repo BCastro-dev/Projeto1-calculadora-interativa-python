@@ -233,6 +233,16 @@ export const CustomCalculatorGenerator: React.FC<CustomCalculatorGeneratorProps>
                 />
                 <span className="text-slate-300">Resto da Divisão (%)</span>
               </label>
+
+              <label className="flex items-center gap-2 p-2 rounded bg-slate-950/40 border border-slate-800/60 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={config.operations.percentage}
+                  onChange={() => toggleOp('percentage')}
+                  className="rounded text-blue-500 focus:ring-0"
+                />
+                <span className="text-slate-300">Porcentagem (%)</span>
+              </label>
             </div>
           </div>
 

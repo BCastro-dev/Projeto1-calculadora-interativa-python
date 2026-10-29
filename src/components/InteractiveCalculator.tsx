@@ -461,10 +461,11 @@ export const InteractiveCalculator: React.FC<InteractiveCalculatorProps> = ({
                 )
               </button>
               <button
-                onClick={() => handleInput(' / ')}
-                className="p-3 text-sm font-semibold bg-blue-900/40 hover:bg-blue-800/60 text-blue-300 border border-blue-700/40 rounded-lg transition-colors cursor-pointer"
+                onClick={() => handleInput('%')}
+                className="p-3 text-sm font-semibold bg-indigo-900/40 hover:bg-indigo-800/60 text-indigo-300 border border-indigo-700/40 rounded-lg transition-colors cursor-pointer"
+                title="Calcular Porcentagem (%)"
               >
-                / (div)
+                % (porc)
               </button>
 
               {/* Row 2 */}
@@ -487,10 +488,10 @@ export const InteractiveCalculator: React.FC<InteractiveCalculatorProps> = ({
                 9
               </button>
               <button
-                onClick={() => handleInput(' * ')}
+                onClick={() => handleInput(' / ')}
                 className="p-3 text-sm font-semibold bg-blue-900/40 hover:bg-blue-800/60 text-blue-300 border border-blue-700/40 rounded-lg transition-colors cursor-pointer"
               >
-                * (mult)
+                / (div)
               </button>
 
               {/* Row 3 */}
@@ -513,10 +514,10 @@ export const InteractiveCalculator: React.FC<InteractiveCalculatorProps> = ({
                 6
               </button>
               <button
-                onClick={() => handleInput(' - ')}
+                onClick={() => handleInput(' * ')}
                 className="p-3 text-sm font-semibold bg-blue-900/40 hover:bg-blue-800/60 text-blue-300 border border-blue-700/40 rounded-lg transition-colors cursor-pointer"
               >
-                - (sub)
+                * (mult)
               </button>
 
               {/* Row 4 */}
@@ -539,10 +540,10 @@ export const InteractiveCalculator: React.FC<InteractiveCalculatorProps> = ({
                 3
               </button>
               <button
-                onClick={() => handleInput(' + ')}
+                onClick={() => handleInput(' - ')}
                 className="p-3 text-sm font-semibold bg-blue-900/40 hover:bg-blue-800/60 text-blue-300 border border-blue-700/40 rounded-lg transition-colors cursor-pointer"
               >
-                + (adição)
+                - (sub)
               </button>
 
               {/* Row 5 */}
@@ -566,11 +567,19 @@ export const InteractiveCalculator: React.FC<InteractiveCalculatorProps> = ({
                 ⌫
               </button>
               <button
+                onClick={() => handleInput(' + ')}
+                className="p-3 text-sm font-semibold bg-blue-900/40 hover:bg-blue-800/60 text-blue-300 border border-blue-700/40 rounded-lg transition-colors cursor-pointer"
+              >
+                + (adição)
+              </button>
+
+              {/* Row 6: Wide Equals */}
+              <button
                 onClick={handleEquals}
-                className="p-3 text-base font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors shadow-sm cursor-pointer"
+                className="col-span-4 p-3.5 text-base font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors shadow-sm cursor-pointer flex items-center justify-center gap-2"
                 title="Executar cálculo em Python (=)"
               >
-                =
+                = (Calcular em Python)
               </button>
             </div>
           </div>
@@ -668,6 +677,24 @@ export const InteractiveCalculator: React.FC<InteractiveCalculatorProps> = ({
                 <span className="font-semibold block text-blue-300">Juros Compostos 1 ano</span>
                 <span className="font-mono-code text-[11px] text-slate-400 truncate block">
                   1000 * (1 + 0.05)**12
+                </span>
+              </button>
+              <button
+                onClick={() => handleLoadPreset('250 * 15%')}
+                className="text-left p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 border border-slate-700/40 transition-colors cursor-pointer"
+              >
+                <span className="font-semibold block text-blue-300">Porcentagem (15% de 250)</span>
+                <span className="font-mono-code text-[11px] text-slate-400 truncate block">
+                  250 * 15%
+                </span>
+              </button>
+              <button
+                onClick={() => handleLoadPreset('200 + 10%')}
+                className="text-left p-2 rounded bg-slate-800/50 hover:bg-slate-800 text-slate-300 border border-slate-700/40 transition-colors cursor-pointer"
+              >
+                <span className="font-semibold block text-blue-300">Acréscimo de 10% (200 + 10%)</span>
+                <span className="font-mono-code text-[11px] text-slate-400 truncate block">
+                  200 + 10%
                 </span>
               </button>
               <button
